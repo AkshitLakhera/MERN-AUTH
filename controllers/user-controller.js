@@ -2,6 +2,8 @@
 // const User = require('../model/User');
 const User = require('../model/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
+const JWT_Secret = "mysecret";
  const signup = async(req,res,next) => {
     const {name,email,password} =req.body;
     let existingUser;
@@ -43,7 +45,36 @@ const isPassword = bcrypt.compare(password,existingUser.password);
 if(!isPassword){
     res.status(400).json({message:"Invalid email/password"})
 }
-res.status(200).send({message :"User successfully Loged in"})
+// Generating token for user
+const token = jwt.sign({id :existingUser._id}, JWT_Secret,{expiresIn:"1hr"} )
+res.status(200).send({message :"User successfully Loged in",user:existingUser,token})
 }
+// Middleware Its is bearer kinf of token
+const verifytoken = (req,res,next) => {
+    const headers = req.headers['authorization'];
+    const token = headers.split(" ")[1];
+    jwt.verify(String(token),JWT_Secret,(err,user) => {
+        if(err) {
+            return res.status(400).send({message:"Invalid Token"});
+        }
+        req.id=user.id;
+    })
+    next();
+}
+const getUser = async (req, res, next) => {
+    const userId = req.id;
+    let user;
+    try {
+      user = await User.findById(userId, "-password");
+    } catch (err) {
+      return new Error(err);
+    }
+    if (!user) {
+      return res.status(404).json({ messsage: "User Not FOund" });
+    }
+    return res.status(200).json({ user });
+  };
 exports.signup=signup;
 exports.login=login;
+exports.verifytoken=verifytoken;
+exports.getUser=getUser;
