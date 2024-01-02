@@ -43,11 +43,18 @@ if(!existingUser){
 }
 const isPassword = bcrypt.compare(password,existingUser.password);
 if(!isPassword){
-    res.status(400).json({message:"Invalid email/password"})
+    return res.status(400).json({message:"Invalid email/password"})
 }
 // Generating token for user
 const token = jwt.sign({id :existingUser._id}, JWT_Secret,{expiresIn:"1hr"} )
-res.status(200).send({message :"User successfully Loged in",user:existingUser,token})
+// Setting cookie
+res.cookie(String(existingUser._id),token,{
+    path:"/",
+    expires:new Date (Date.now() + 1000 * 30),
+    httpOnly:true,
+    sameSite:'lax'
+})
+return res.status(200).send({message :"User successfully Loged in",user:existingUser,token})
 }
 // Middleware Its is bearer kinf of token
 const verifytoken = (req,res,next) => {
