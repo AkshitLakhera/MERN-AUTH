@@ -27,4 +27,23 @@ const bcrypt = require('bcryptjs');
  }
  return res.status(201).json({message:user})
 }
-exports.signup=signup
+// Login route
+const login = async(req,res,next) => {
+    const {email,password} = req.body
+let existingUser;
+try{
+    existingUser= await User.findOne({email:email});  
+} catch(err) {
+    return new Error(err);''
+}
+if(!existingUser){
+   return res.status(404).send({message:"User not found ,Signup please"})
+}
+const isPassword = bcrypt.compare(password,existingUser.password);
+if(!isPassword){
+    res.status(400).json({message:"Invalid email/password"})
+}
+res.status(200).send({message :"User successfully Loged in"})
+}
+exports.signup=signup;
+exports.login=login;
