@@ -56,20 +56,40 @@ res.cookie(String(existingUser._id),token,{
 })
 return res.status(200).send({message :"User successfully Loged in",user:existingUser,token})
 }
-// Middleware Its is bearer kind of token
-const verifytoken = (req,res,next) => {
-    const cookie = req.headers
-    console.log(cookie); //format of cookie is (id = cookie)
-    // const headers = req.headers['authorization'];
-    // const token = headers.split(" ")[1];
-    // jwt.verify(String(token),JWT_Secret,(err,user) => {
-    //     if(err) {
-    //         return res.status(400).send({message:"Invalid Token"});
-    //     }
-    //     req.id=user.id;
-    // })
-    // next();
-}
+// Middleware: It is a Bearer kind of token
+const verifytoken = (req, res, next) => {
+    // Extract the 'cookie' header from the request
+    const cookies = req.headers.cookie;
+
+    // Log the cookies for debugging purposes
+    console.log(cookies); // Format of the cookie is (id=token)
+
+    // Split the cookies into an array and extract the token value
+    const token = cookies ? cookies.split("=")[1] : null;
+    console.log(token);
+
+    try {
+        // Verify the token
+        jwt.verify(token, JWT_Secret, (err, user) => {
+            if (err) {
+                // Check for TokenExpiredError and handle it separately
+                if (err.name === 'TokenExpiredError') {
+                    return res.status(401).json({ message: "Unauthorized - Token has expired" });
+                } else {
+                    // Handle other types of errors (e.g., invalid signature)
+                    return res.status(400).json({ message: "Invalid Token" });
+                }
+            }
+
+            // If verification is successful, set user id in the request and proceed to the next middleware
+            req.id = user.id;
+            next();
+        });
+    } catch (error) {
+        // Handle any unexpected errors during token verification
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
 const getUser = async (req, res, next) => {
     const userId = req.id;
     let user;
