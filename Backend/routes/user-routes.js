@@ -9,5 +9,6 @@ router.post("/signup",signup)
 router.post('/login',login)
 // ask for info
 router.get('/user',verifytoken,getUser)
+//  verify token
 
 module.exports = router
