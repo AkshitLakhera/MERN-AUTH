@@ -46,7 +46,7 @@ if(!isPassword){
     return res.status(400).json({message:"Invalid email/password"})
 }
 // Generating token for user
-const token = jwt.sign({id :existingUser._id}, JWT_Secret,{expiresIn:"1hr"} )
+const token = jwt.sign({id :existingUser._id}, JWT_Secret,{expiresIn:"30sec"} )
 // Setting cookie
 res.cookie(String(existingUser._id),token,{
     path:"/",
@@ -56,17 +56,19 @@ res.cookie(String(existingUser._id),token,{
 })
 return res.status(200).send({message :"User successfully Loged in",user:existingUser,token})
 }
-// Middleware Its is bearer kinf of token
+// Middleware Its is bearer kind of token
 const verifytoken = (req,res,next) => {
-    const headers = req.headers['authorization'];
-    const token = headers.split(" ")[1];
-    jwt.verify(String(token),JWT_Secret,(err,user) => {
-        if(err) {
-            return res.status(400).send({message:"Invalid Token"});
-        }
-        req.id=user.id;
-    })
-    next();
+    const cookie = req.headers
+    console.log(cookie); //format of cookie is (id = cookie)
+    // const headers = req.headers['authorization'];
+    // const token = headers.split(" ")[1];
+    // jwt.verify(String(token),JWT_Secret,(err,user) => {
+    //     if(err) {
+    //         return res.status(400).send({message:"Invalid Token"});
+    //     }
+    //     req.id=user.id;
+    // })
+    // next();
 }
 const getUser = async (req, res, next) => {
     const userId = req.id;
