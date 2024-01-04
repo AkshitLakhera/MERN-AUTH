@@ -1,12 +1,26 @@
 // import React from 'react'
 import {TextField,Box, Button, Typography} from "@mui/material"
 import { useState } from "react";
+import axios from "axios"
+import {useNavigate} from 'react-router-dom';
 const Signup = () => {
+  const history = useNavigate();
   const [input,setInputs] = useState({
     name:"",
     email:"",
     password:""
   })
+  const sendRequest = async () => {
+    const res = await axios
+      .post("http://localhost:5000/api/signup", {
+        name: input.name,
+        email: input.email,
+        password: input.password,
+      })
+      .catch((err) => console.log(err));
+    const data = await res.data;
+    return data;
+  };
   const handleChange = (e) => {
     setInputs(prev => ({
       ...prev,
@@ -16,7 +30,7 @@ const Signup = () => {
   
   const handleSubmit = (e) => {
       e.preventDefault()
-      console.log(input)
+      sendRequest().then(() => history('/login'))
       
   };
   return ( 
