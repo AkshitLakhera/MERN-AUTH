@@ -15,6 +15,7 @@ export const Header = () => {
          {/* Writing button clicking logic here */}
           <Tabs textColor='inherit' value={value} onChange={(e,val) => setvalue(val)}>
             {/* This is how we add route  with react-router-dom, We use here to and LinkComponent methods */}
+            {/* Biggest  benifit of react-router with do routing withoit refreshing the page */}
             <Tab to="/login"  LinkComponent= {Link} label="Login" sx={{ marginRight: '1rem' }} />
             <Tab  to="/signup"  LinkComponent={Link} label="Signup" />
           </Tabs>
