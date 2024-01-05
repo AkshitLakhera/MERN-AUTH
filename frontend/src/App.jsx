@@ -14,9 +14,10 @@ function App() {
   </header>
   <main>
     <Routes>
+      {/* This  is connecting user route to a page with react router dom */}
       <Route path='/login' element={<Login/>}/>
       <Route path='/signup' element={<Signup/>}/>
-      <Route path='/welcome' element={<Welcome/>}/>
+      <Route path='/user' element={<Welcome/>}/>
     </Routes>
   </main>
   
