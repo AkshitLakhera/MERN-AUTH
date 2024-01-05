@@ -10,5 +10,5 @@ router.post('/login',login)
 // ask for info
 router.get('/user',verifytoken,getUser)
 //  verify token
-router.get('/refresh',refreshToken,verifytoken);
+router.get('/refresh',refreshToken,verifytoken,getUser);
 module.exports = router

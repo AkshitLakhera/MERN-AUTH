@@ -3,7 +3,6 @@
 const User = require('../model/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
-const JWT_Secret = "mysecret";
  const signup = async(req,res,next) => {
     const {name,email,password} =req.body;
     let existingUser;
@@ -46,7 +45,11 @@ if(!isPassword){
     return res.status(400).json({message:"Invalid email/password"})
 }
 // Generating token for user
-const token = jwt.sign({id :existingUser._id}, JWT_Secret,{expiresIn:"30sec"} )
+const token = jwt.sign({id :existingUser._id}, process.env.JWT_Secret,{expiresIn:"35sec"} )
+console.log("Generated token\n" ,token)
+if(req.cookies[`${existingUser._id}`]) {
+    req.cookies[`${existingUser._id}`] = ""
+}
 // Setting cookie
 res.cookie(String(existingUser._id),token,{
     path:"/",
@@ -70,7 +73,7 @@ const verifytoken = (req, res, next) => {
 
     try {
         // Verify the token
-        jwt.verify(token, JWT_Secret, (err, user) => {
+        jwt.verify(token, process.env.JWT_Secret, (err, user) => {
             if (err) {
                 // Check for TokenExpiredError and handle it separately
                 if (err.name === 'TokenExpiredError') {
@@ -111,7 +114,7 @@ const getUser = async (req, res, next) => {
     if(!prevToken) {
         return res.status(400).json({message:"couldn't find token"})
     }
-    jwt.verify(String(prevToken),JWT_Secret,(err,user) => {
+    jwt.verify(String(prevToken),process.env.JWT_Secret,(err,user) => {
         if (err) {
             console.log(err);
             return res.status(403).json({message:"Authentication failed"})
@@ -119,8 +122,9 @@ const getUser = async (req, res, next) => {
         req.clearCookie(`$(user.id)`);
         req.cookies[`$(user.id)`] ='';
         const token =jwt.sign({id:user.id},JWT_Secret,{
-            expiresIn:'30sec'
+            expiresIn:'35sec'
         })
+        console.log("Regenerated token/n", token)
         res.cookie(String(user.id),token,{
             path:"/",
             expires:new Date (Date.now() + 1000 * 30),
