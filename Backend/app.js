@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 const app= express();
 const router = require("./routes/user-routes");
 const cookieParser = require('cookie-parser')
+const cors = require("cors")
+app.use(cors({ credentials: true, origin: ' http://localhost:5173' }));
 app.use(express.json());
 app.use('/api',router);
 app.use(cookieParser());

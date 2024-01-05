@@ -1,51 +1,87 @@
-// import React from 'react'
-import {TextField,Box, Button, Typography} from "@mui/material"
-import { useState } from "react";
-import axios from "axios"
-import {useNavigate} from 'react-router-dom';
+import { Box, Button, TextField, Typography } from "@mui/material";
+import  { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const Signup = () => {
   const history = useNavigate();
-  const [input,setInputs] = useState({
-    name:"",
-    email:"",
-    password:""
-  })
-  const sendRequest = async () => {
-    const res = await axios
-      .post("http://localhost:5000/api/signup", {
-        name: input.name,
-        email: input.email,
-        password: input.password,
-      })
-      .catch((err) => console.log(err));
-    const data = await res.data;
-    return data;
-  };
+  const [inputs, setInputs] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const handleChange = (e) => {
-    setInputs(prev => ({
+    setInputs((prev) => ({
       ...prev,
-      [e.target.name] : e.target.value
-    }))
-  }
+      [e.target.name]: e.target.value,
+    }));
+  };
+  const sendRequest = async () => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/signup", {
+        name: inputs.name,
+        email: inputs.email,
+        password: inputs.password,
+      });
+      const data = res.data;
+      return data;
+    } catch (err) {
+      console.error("Error during request:", err);
+      throw err; // Re-throw the error to be caught by the caller
+    }
+  };
   
   const handleSubmit = (e) => {
-      e.preventDefault()
-      sendRequest().then(() => history('/login'))
-      
+    e.preventDefault();
+    // send http request
+    sendRequest().then(() => history("/login"));
   };
-  return ( 
-  <div>
-    <form onSubmit={handleSubmit} >
-      <Box justifyContent="center" alignItems="center" marginLeft="auto" marginRight="auto" width={300} display="flex" flexDirection={"column"} >
-      <Typography  marginTop="2rem" variant="h3">Signup</Typography>
-       <TextField name="name" onChange={handleChange} value={input.name} variant="outlined" placeholder="Name" margin="normal"/>
-        <TextField name="email" onChange={handleChange}  type="email"     value = {input.email} variant="outlined" placeholder="Email" margin="normal"/>
-        <TextField name="password"  onChange={handleChange} type="password "value={input.password}  variant="outlined" placeholder="Password" margin="normal"/>
-        <Button variant="contained" type="submit">Signup</Button>    
-      </Box>
-    </form>
-  </div>
-  )
-}
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <Box
+          marginLeft="auto"
+          marginRight="auto"
+          width={300}
+          display="flex"
+          flexDirection={"column"}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="h2">Signup</Typography>
 
-export default Signup
+          <TextField
+            name="name"
+            onChange={handleChange}
+            value={inputs.name}
+            variant="outlined"
+            placeholder="Name"
+            margin="normal"
+          />
+          <TextField
+            name="email"
+            onChange={handleChange}
+            type={"email"}
+            value={inputs.email}
+            variant="outlined"
+            placeholder="Email"
+            margin="normal"
+          />
+          <TextField
+            name="password"
+            onChange={handleChange}
+            type="password"
+            value={inputs.password}
+            variant="outlined"
+            placeholder="Password"
+            margin="normal"
+          />
+          <Button variant="contained" type="submit">
+            Signup
+          </Button>
+        </Box>
+      </form>
+    </div>
+  );
+};
+
+export default Signup;
