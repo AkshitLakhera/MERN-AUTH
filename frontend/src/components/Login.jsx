@@ -1,12 +1,12 @@
-// import React from 'react'
 import { Box, Button, TextField, Typography } from "@mui/material";
-import  { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import  { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { authActions } from "../../store";
+
 const Login = () => {
-  const dispatch =useDispatch();
+  const dispatch = useDispatch();
   const history = useNavigate();
   const [inputs, setInputs] = useState({
     email: "",
@@ -19,23 +19,21 @@ const Login = () => {
     }));
   };
   const sendRequest = async () => {
-    try {
-      const res = await axios.post("http://localhost:5000/api/login", {
+    const res = await axios
+      .post("http://localhost:5000/api/login", {
         email: inputs.email,
         password: inputs.password,
-      });
-      const data = res.data;
-      return data;
-    } catch (err) {
-      console.error("Error during request:", err);
-      throw err; // Re-throw the error to be caught by the caller
-    }
+      })
+      .catch((err) => console.log(err));
+    const data = await res.data;
+    return data;
   };
-  
   const handleSubmit = (e) => {
     e.preventDefault();
     // send http request
-    sendRequest().then(() => dispatch(authActions.login())).then(() => history("/user"));
+    sendRequest()
+      .then(() => dispatch(authActions.login()))
+      .then(() => history("/user"));
   };
   return (
     <div>
@@ -70,12 +68,12 @@ const Login = () => {
             margin="normal"
           />
           <Button variant="contained" type="submit">
-           Login
+            Login
           </Button>
         </Box>
       </form>
     </div>
   );
-}
+};
 
-export default Login
+export default Login;

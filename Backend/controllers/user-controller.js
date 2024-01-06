@@ -47,9 +47,13 @@ if(!isPassword){
 // Generating token for user
 const token = jwt.sign({id :existingUser._id}, process.env.JWT_Secret,{expiresIn:"35sec"} )
 console.log("Generated token\n" ,token)
-if(req.cookies[`${existingUser._id}`]) {
-    req.cookies[`${existingUser._id}`] = ""
-}
+// if(req.cookies[`${existingUser._id}`]) {
+//     req.cookies[`${existingUser._id}`] = ""
+// }
+if (req.cookies[`${existingUser._id}`]) {
+    req.cookies[`${existingUser._id}`] = "";
+  }
+
 // Setting cookie
 res.cookie(String(existingUser._id),token,{
     path:"/",

@@ -16,20 +16,17 @@ const Signup = () => {
     }));
   };
   const sendRequest = async () => {
-    try {
-      const res = await axios.post("http://localhost:5000/api/signup", {
+    const res = await axios
+      .post("http://localhost:5000/api/signup", {
         name: inputs.name,
         email: inputs.email,
         password: inputs.password,
-      });
-      const data = res.data;
-      return data;
-    } catch (err) {
-      console.error("Error during request:", err);
-      throw err; // Re-throw the error to be caught by the caller
-    }
+      })
+      .catch((err) => console.log(err));
+    const data = await res.data;
+    console.log(res)
+    return data;
   };
-  
   const handleSubmit = (e) => {
     e.preventDefault();
     // send http request
